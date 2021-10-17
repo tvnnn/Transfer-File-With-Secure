@@ -502,7 +502,7 @@ public class Client extends javax.swing.JFrame {
             do
             {
                 ch = fin.read();
-                dout.writeUTF(String.valueOf(ch));
+                dout.writeUTF(encrypt(String.valueOf(ch)));
             }
             while(ch != -1);
             fin.close();
@@ -519,11 +519,24 @@ public class Client extends javax.swing.JFrame {
             dout.writeUTF(fileName);
             
             String msgFromServer = din.readUTF();
-            if(msgFromServer.compareTo("File Not Found") == 0)
+            if(msgFromServer.compareTo("PM") == 0)
             {
-                JOptionPane.showConfirmDialog(null, "Bruh!! File not found on server!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showConfirmDialog(null, "Permission Denied!", "ERROR", JOptionPane.DEFAULT_OPTION);
                 return;
             }
+            
+            if(msgFromServer.compareTo("CantDownDir") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "Unable to download folder!", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            
+            if(msgFromServer.compareTo("File Not Found") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "Bruh!! File not found on server!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            
             else if(msgFromServer.compareTo("READY") == 0)
             {
                 File f = new File(clientDir + lst_Server.getSelectedValue());
@@ -542,12 +555,10 @@ public class Client extends javax.swing.JFrame {
                 String temp;
                 do
                 {
-                    temp = din.readUTF();
+                    temp = decrypt(din.readUTF());
                     ch = Integer.parseInt(temp);
                     if(ch != -1)
-                    {
-                        fout.write(ch);                    
-                    }
+                        fout.write(ch);
                 }
                 while(ch != -1);
                 fout.close();
@@ -734,36 +745,74 @@ public class Client extends javax.swing.JFrame {
             }
         }
 
-        public static String hashAccount(String sString) throws NoSuchAlgorithmException
+        public static String hashAccount(String sString)
         {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedhash = digest.digest(sString.getBytes(StandardCharsets.UTF_8));
-
-            StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
-            for (int i = 0; i < encodedhash.length; i++)
+            try
             {
-                String hex = Integer.toHexString(0xff & encodedhash[i]);
-                if(hex.length() == 1)
-                    hexString.append('0');
-                hexString.append(hex);
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] encodedhash = digest.digest(sString.getBytes(StandardCharsets.UTF_8));
+
+                StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
+                for (int i = 0; i < encodedhash.length; i++)
+                {
+                    String hex = Integer.toHexString(0xff & encodedhash[i]);
+                    if(hex.length() == 1)
+                        hexString.append('0');
+                    hexString.append(hex);
+                }
+                return hexString.toString();
             }
-            return hexString.toString();
+            catch(Exception ex)
+            {
+                System.out.println("Error while hashing: " + ex.toString());
+            }
+            return null;
         }
         
-        public static String encrypt(String strToEncrypt) throws Exception
+        public static String encrypt(String strToEncrypt)
         {
+            try
+            {
+                byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                IvParameterSpec ivspec = new IvParameterSpec(iv);
 
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+                SecretKey tmp = factory.generateSecret(spec);
+                SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
+                return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Error while encrypting: " + ex.toString());
+            }
+            return null;
+        }
+        
+        public static String decrypt(String strToDecrypt)
+        {
+            try
+            {
+                byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                IvParameterSpec ivspec = new IvParameterSpec(iv);
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+                SecretKey tmp = factory.generateSecret(spec);
+                SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
+                return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            }
+            catch (Exception e)
+            {
+              System.out.println("Error while decrypting: " + e.toString());
+            }
+            return null;
         }
         
         public void clientBrowser()
