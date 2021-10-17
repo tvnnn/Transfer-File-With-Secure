@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Scanner;
@@ -684,9 +686,9 @@ public class Client extends javax.swing.JFrame {
         public void Login() throws Exception
         {
             String usr = txt_Username.getText();
-            dout.writeUTF(encrypt(usr, "akuma"));
+            dout.writeUTF(hashAccount(usr));
             String pass = txt_Password.getText();
-            dout.writeUTF(encrypt(pass, "bisicetea"));
+            dout.writeUTF(hashAccount(pass));
 
             
             String reply = din.readUTF();
@@ -730,6 +732,22 @@ public class Client extends javax.swing.JFrame {
             {
                 JOptionPane.showMessageDialog(null, "Login failed!");
             }
+        }
+
+        public static String hashAccount(String sString) throws NoSuchAlgorithmException
+        {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(sString.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
+            for (int i = 0; i < encodedhash.length; i++)
+            {
+                String hex = Integer.toHexString(0xff & encodedhash[i]);
+                if(hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
         }
         
         public static String encrypt(String strToEncrypt) throws Exception
