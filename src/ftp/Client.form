@@ -72,7 +72,7 @@
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="btn_Receive" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
-                                          <Component id="btn_Receive1" min="-2" pref="137" max="-2" attributes="0"/>
+                                          <Component id="btn_Delete" min="-2" pref="137" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -136,7 +136,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btn_Send" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
                           <Component id="btn_Receive" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
-                          <Component id="btn_Receive1" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="btn_Delete" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="27" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -311,7 +311,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_LogoutActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="btn_Receive1">
+            <Component class="javax.swing.JButton" name="btn_Delete">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="15" style="1"/>
@@ -322,7 +322,7 @@
                 <Property name="text" type="java.lang.String" value="Delete"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_Receive1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_DeleteActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">

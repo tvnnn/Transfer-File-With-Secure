@@ -89,7 +89,7 @@ class ftp extends Thread
             do
             {
                 ch = fin.read();
-                dout.writeUTF(encrypt(String.valueOf(ch)));
+                dout.writeUTF(String.valueOf(ch)); ///////////////////////////////////////////////// ADD Encryption
             }
             while(ch != -1);    
             fin.close();    
@@ -122,7 +122,7 @@ class ftp extends Thread
             String temp;
             do
             {
-                temp = decrypt(din.readUTF());
+                temp = din.readUTF(); ///////////////////////////////////////// ADD Decryption
                 ch = Integer.parseInt(temp);
                 if(ch != -1)
                     fout.write(ch);                    
@@ -136,6 +136,29 @@ class ftp extends Thread
             return;
         }
             
+    }
+
+    void DeleteFile() throws Exception
+    {
+        String filename = din.readUTF();
+        File f = new File(filename);
+        if (f.canRead() == false)
+        {
+            dout.writeUTF("PM");
+            return;
+        }
+        else
+        {
+            if (f.exists())
+            {
+                dout.writeUTF("SURE");
+                if(din.readUTF().compareTo("Y") == 0)
+                    f.delete();
+                else
+                    return;
+            }
+        }
+
     }
 
     void BrowseDir() throws Exception
@@ -265,6 +288,10 @@ class ftp extends Thread
                 else if(Command.compareTo("LOGOUT") == 0)
                 {
                     verify();
+                }
+                else if(Command.compareTo("DELETE") == 0)
+                {
+                    DeleteFile();
                 }
             }
             catch(Exception ex)

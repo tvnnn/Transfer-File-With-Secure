@@ -67,7 +67,7 @@ public class Client extends javax.swing.JFrame {
         lst_Client = new javax.swing.JList<>();
         btn_Browser = new javax.swing.JButton();
         btn_Logout = new javax.swing.JButton();
-        btn_Receive1 = new javax.swing.JButton();
+        btn_Delete = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jsepa = new javax.swing.JSeparator();
@@ -160,12 +160,12 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        btn_Receive1.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
-        btn_Receive1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/delete.png"))); // NOI18N
-        btn_Receive1.setText("Delete");
-        btn_Receive1.addActionListener(new java.awt.event.ActionListener() {
+        btn_Delete.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
+        btn_Delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/delete.png"))); // NOI18N
+        btn_Delete.setText("Delete");
+        btn_Delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_Receive1ActionPerformed(evt);
+                btn_DeleteActionPerformed(evt);
             }
         });
 
@@ -215,7 +215,7 @@ public class Client extends javax.swing.JFrame {
                                 .addGroup(jPanel4Layout.createSequentialGroup()
                                     .addComponent(btn_Receive)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btn_Receive1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGap(18, 18, 18)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,7 +262,7 @@ public class Client extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Send, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_Receive, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_Receive1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -502,7 +502,7 @@ public class Client extends javax.swing.JFrame {
             do
             {
                 ch = fin.read();
-                dout.writeUTF(encrypt(String.valueOf(ch)));
+                dout.writeUTF(String.valueOf(ch)); //////////////////// ADD Encryption
             }
             while(ch != -1);
             fin.close();
@@ -555,7 +555,7 @@ public class Client extends javax.swing.JFrame {
                 String temp;
                 do
                 {
-                    temp = decrypt(din.readUTF());
+                    temp = din.readUTF(); //////////////////////////// ADD Decryption
                     ch = Integer.parseInt(temp);
                     if(ch != -1)
                         fout.write(ch);
@@ -566,6 +566,41 @@ public class Client extends javax.swing.JFrame {
             }
             JOptionPane.showConfirmDialog(null, "File Receive Successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
         }
+        
+        void DeleteFile() throws Exception
+        {
+            dout.writeUTF("DELETE");
+            String fileName = dir + lst_Server.getSelectedValue();
+            
+            dout.writeUTF(fileName);
+            
+            String msgFromServer = din.readUTF();
+            if(msgFromServer.compareTo("PM") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "Permission Denied!", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            else
+            {
+                if(msgFromServer.compareTo("SURE") == 0)
+                {
+                    int a = JOptionPane.showConfirmDialog(null, "Are you sure to delete this file/folder?", "NOTIFICATION", JOptionPane.YES_NO_OPTION);
+                    if (a == 0)
+                    {
+                        dout.writeUTF("Y");
+                        JOptionPane.showMessageDialog(null, "Delete Successfully!!!", "NOTIFICATION", JOptionPane.DEFAULT_OPTION);
+                        t.BrowseDirectory();
+                    }
+                    else
+                    {
+                        dout.writeUTF("N");
+                        return;
+                    }
+                    return;
+                }
+            }
+        }
+        
         void BrowseDirectory() throws Exception
         {
             try
@@ -584,6 +619,7 @@ public class Client extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Wrong path. Can not access!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
                     btn_Send.setEnabled(false);
                     btn_Receive.setEnabled(false);
+                    btn_Delete.setEnabled(false);
                     btn_Back.setEnabled(false);
                     return;
                 }
@@ -630,6 +666,7 @@ public class Client extends javax.swing.JFrame {
                         lst_Server.setModel(dlm);
                         btn_Back.setEnabled(true);
                         btn_Receive.setEnabled(true);
+                        btn_Delete.setEnabled(true);
                     }
                 }
             }
@@ -718,6 +755,7 @@ public class Client extends javax.swing.JFrame {
                 btn_Back.setEnabled(false);
                 btn_Send.setEnabled(false);
                 btn_Receive.setEnabled(false);
+                btn_Delete.setEnabled(false);
                 jsepa.setBackground(Color.BLACK);
                 
                 lst_Server.addMouseListener(new MouseAdapter()
@@ -945,17 +983,27 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_ReceiveActionPerformed
 
     private void btn_LogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LogoutActionPerformed
-        try {
+        try
+        {
             t.Logout();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.setVisible(true);
     }//GEN-LAST:event_btn_LogoutActionPerformed
 
-    private void btn_Receive1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Receive1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_Receive1ActionPerformed
+    private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
+        try
+        {
+            t.DeleteFile();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btn_DeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1003,11 +1051,11 @@ public class Client extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Back;
     private javax.swing.JButton btn_Browser;
+    private javax.swing.JButton btn_Delete;
     private javax.swing.JButton btn_List;
     private javax.swing.JLabel btn_Login;
     private javax.swing.JButton btn_Logout;
     private javax.swing.JButton btn_Receive;
-    private javax.swing.JButton btn_Receive1;
     private javax.swing.JButton btn_Send;
     private javax.swing.JFileChooser fcPath;
     private javax.swing.JFrame frmMenu;
