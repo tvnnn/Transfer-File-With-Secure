@@ -25,8 +25,6 @@ public class FTPServer
         {
             System.out.println("Waiting for Connection ...");
             ftp t = new ftp(socfd.accept());
-            PrintWriter out = new PrintWriter(t.ClientSoc.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(t.ClientSoc.getInputStream()));
         }
     }
 }
