@@ -16,7 +16,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Scanner;
@@ -72,7 +71,15 @@ public class Client extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jsepa = new javax.swing.JSeparator();
         jLabel8 = new javax.swing.JLabel();
+        btn_NewFile = new javax.swing.JButton();
+        btn_Rename = new javax.swing.JButton();
+        btn_MakeDirectory = new javax.swing.JButton();
         fcPath = new javax.swing.JFileChooser();
+        frmNewFile = new javax.swing.JFrame();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        txt_NewFile = new javax.swing.JTextField();
+        btn_NewFileName = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -136,6 +143,7 @@ public class Client extends javax.swing.JFrame {
         lb2.setText("User: ");
 
         lb_User.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        lb_User.setText("dsfgsdfg");
 
         lst_Server.setSelectionBackground(new java.awt.Color(192, 56, 226));
         jScrollPane1.setViewportView(lst_Server);
@@ -183,6 +191,33 @@ public class Client extends javax.swing.JFrame {
         jLabel8.setIcon(new javax.swing.ImageIcon("D:\\Code\\Network\\FTP2\\FTP2\\src\\ftp\\icons8_windows_client_48px.png")); // NOI18N
         jLabel8.setText("FTP Client");
 
+        btn_NewFile.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
+        btn_NewFile.setIcon(new javax.swing.ImageIcon("D:\\Code\\Network\\FTP2\\FTP2\\src\\ftp\\plus.png")); // NOI18N
+        btn_NewFile.setText("File");
+        btn_NewFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_NewFileActionPerformed(evt);
+            }
+        });
+
+        btn_Rename.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
+        btn_Rename.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/edit.png"))); // NOI18N
+        btn_Rename.setText("Rename");
+        btn_Rename.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RenameActionPerformed(evt);
+            }
+        });
+
+        btn_MakeDirectory.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
+        btn_MakeDirectory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/plus.png"))); // NOI18N
+        btn_MakeDirectory.setText("Folder");
+        btn_MakeDirectory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_MakeDirectoryActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -204,39 +239,47 @@ public class Client extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btn_Browser)
                         .addGap(193, 193, 193)))
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(lb2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(lb_User)
-                            .addGap(94, 94, 94)
-                            .addComponent(btn_Logout))
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txt_Path, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
-                                .addGroup(jPanel4Layout.createSequentialGroup()
-                                    .addComponent(btn_Receive)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btn_List, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(43, 43, 43))))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(lb2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lb_User)
+                        .addGap(46, 46, 46)
+                        .addComponent(btn_Logout)
+                        .addGap(49, 49, 49))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btn_NewFile, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_MakeDirectory, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_Rename, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_Receive)
+                        .addGap(179, 179, 179))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
+                            .addComponent(txt_Path))
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn_List, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(49, 49, 49))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jsepa)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(59, 59, 59)
                         .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(44, 44, 44)
+                        .addComponent(jsepa)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addComponent(jLabel2)
                 .addGap(36, 36, 36))
         );
@@ -262,8 +305,7 @@ public class Client extends javax.swing.JFrame {
                         .addComponent(jLabel7)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(btn_List, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -275,8 +317,11 @@ public class Client extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_Send, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_Receive, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                            .addComponent(btn_NewFile, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_Rename, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_MakeDirectory, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel2))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -291,12 +336,64 @@ public class Client extends javax.swing.JFrame {
         frmMenuLayout.setHorizontalGroup(
             frmMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(frmMenuLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 45, Short.MAX_VALUE))
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1488, Short.MAX_VALUE)
+                .addContainerGap())
         );
         frmMenuLayout.setVerticalGroup(
             frmMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
+        );
+
+        frmNewFile.setType(java.awt.Window.Type.POPUP);
+
+        jPanel5.setBackground(new java.awt.Color(255, 153, 153));
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setText("Input file name: ");
+
+        btn_NewFileName.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_NewFileName.setText("OK");
+        btn_NewFileName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_NewFileNameActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_NewFileName)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(18, 18, 18)
+                        .addComponent(txt_NewFile, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(58, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(txt_NewFile, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btn_NewFileName)
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout frmNewFileLayout = new javax.swing.GroupLayout(frmNewFile.getContentPane());
+        frmNewFile.getContentPane().setLayout(frmNewFileLayout);
+        frmNewFileLayout.setHorizontalGroup(
+            frmNewFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        frmNewFileLayout.setVerticalGroup(
+            frmNewFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -470,7 +567,7 @@ public class Client extends javax.swing.JFrame {
         PrintWriter pw;
         DataOutputStream dout;
         BufferedReader br;
-        String dir, clientDir = "";
+        String dir, clientDir = "", newFileName = "";
         private static final String SECRET_KEY = "sup3r_s3cr3t_k3y_by_b1s1c3t3aS3c";
         private static final String SALT = "sup3r_s4lt_h1h1_b1s1c3t3a";
         ftp(Socket soc)
@@ -637,6 +734,9 @@ public class Client extends javax.swing.JFrame {
                     btn_Receive.setEnabled(false);
                     btn_Delete.setEnabled(false);
                     btn_Back.setEnabled(false);
+                    btn_NewFile.setEnabled(false);
+                    btn_MakeDirectory.setEnabled(false);
+                    btn_Rename.setEnabled(false);
                     return;
                 }
                 else
@@ -683,6 +783,9 @@ public class Client extends javax.swing.JFrame {
                         btn_Back.setEnabled(true);
                         btn_Receive.setEnabled(true);
                         btn_Delete.setEnabled(true);
+                        btn_NewFile.setEnabled(true);
+                        btn_MakeDirectory.setEnabled(true);
+                        //btn_Rename.setEnabled(false);
                     }
                 }
             }
@@ -722,7 +825,6 @@ public class Client extends javax.swing.JFrame {
                     dir = new String(dst, 0, k + 1);
                 }
                 dout.writeUTF(dir);
-                //lb_Pwd.setText("PWD: " + dir);
                 txt_Path.setText(dir);
             }
             String msgFromServer = din.readUTF();
@@ -745,6 +847,8 @@ public class Client extends javax.swing.JFrame {
             lst_Server.setModel(dlm);
             btn_Back.setEnabled(true);
             btn_Receive.setEnabled(true);
+            btn_NewFile.setEnabled(true);
+            btn_MakeDirectory.setEnabled(true);
         }
 
         public void Login() throws Exception
@@ -763,7 +867,7 @@ public class Client extends javax.swing.JFrame {
                 setVisible(false);
                 
                 frmMenu.setDefaultCloseOperation(frmMenu.EXIT_ON_CLOSE);
-                frmMenu.setPreferredSize(new Dimension(1150, 605));
+                frmMenu.setPreferredSize(new Dimension(1498, 605));
                 frmMenu.pack();
                 frmMenu.setVisible(true);
                 lb_User.setText(usr);
@@ -772,6 +876,9 @@ public class Client extends javax.swing.JFrame {
                 btn_Send.setEnabled(false);
                 btn_Receive.setEnabled(false);
                 btn_Delete.setEnabled(false);
+                btn_NewFile.setEnabled(false);
+                btn_MakeDirectory.setEnabled(false);
+                btn_Rename.setEnabled(false);
                 jsepa.setBackground(Color.BLACK);
                 
                 lst_Server.addMouseListener(new MouseAdapter()
@@ -904,11 +1011,46 @@ public class Client extends javax.swing.JFrame {
         }
         public void Logout() throws IOException
         {
+            lst_Client.removeAll();
+            lst_Server.removeAll();
+            btn_Send.setEnabled(false);
+            btn_Receive.setEnabled(false);
+            btn_MakeDirectory.setEnabled(false);
+            btn_NewFile.setEnabled(false);
+            btn_Rename.setEnabled(false);
+            btn_List.setEnabled(false);
+            btn_Back.setEnabled(false);
+            txt_Path.setText("");
             frmMenu.setVisible(false);
             dout.writeUTF("LOGOUT");
         }
+        
+        public void NewFile() throws Exception
+        {
+            frmNewFile.setDefaultCloseOperation(frmMenu.EXIT_ON_CLOSE);
+            frmNewFile.setPreferredSize(new Dimension(572, 169));
+            frmNewFile.pack();
+            frmNewFile.setTitle("Create File");
+            frmNewFile.setVisible(true);
+        }
+        public void NewFileName() throws Exception
+        {
+            newFileName = txt_NewFile.getText();
+            frmNewFile.setVisible(false);
+            dout.writeUTF("NewFile");
+            String fileName = newFileName;
+            dout.writeUTF(fileName);
+            txt_NewFile.setText("");
+            if (din.readUTF().compareTo("File Already Exists") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "File already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            JOptionPane.showConfirmDialog(null, "File created successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
+        }
     }
     
+    //Socket socfd = new Socket("103.28.32.42", 21113);
     Socket socfd = new Socket("192.168.174.132", 21113);
     ftp t = new ftp(socfd);
     
@@ -1021,6 +1163,41 @@ public class Client extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_DeleteActionPerformed
 
+    private void btn_NewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewFileActionPerformed
+        try
+        {
+            t.NewFile();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btn_NewFileActionPerformed
+
+    private void btn_RenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RenameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_RenameActionPerformed
+
+    private void btn_MakeDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_MakeDirectoryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_MakeDirectoryActionPerformed
+
+    private void btn_NewFileNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewFileNameActionPerformed
+        if (txt_NewFile.getText().equals(""))
+        {
+            JOptionPane.showMessageDialog(null, "Let's input file name!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+            return;
+        }
+        try
+        {
+            t.NewFileName();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btn_NewFileNameActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1071,10 +1248,15 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JButton btn_List;
     private javax.swing.JLabel btn_Login;
     private javax.swing.JButton btn_Logout;
+    private javax.swing.JButton btn_MakeDirectory;
+    private javax.swing.JButton btn_NewFile;
+    private javax.swing.JButton btn_NewFileName;
     private javax.swing.JButton btn_Receive;
+    private javax.swing.JButton btn_Rename;
     private javax.swing.JButton btn_Send;
     private javax.swing.JFileChooser fcPath;
     private javax.swing.JFrame frmMenu;
+    private javax.swing.JFrame frmNewFile;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1083,10 +1265,12 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
@@ -1097,6 +1281,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JList<String> lst_Client;
     private javax.swing.JList<String> lst_Server;
     private javax.swing.JPanel separator;
+    private javax.swing.JTextField txt_NewFile;
     private javax.swing.JPasswordField txt_Password;
     private javax.swing.JTextField txt_Path;
     private javax.swing.JTextField txt_Username;
