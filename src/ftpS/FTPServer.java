@@ -25,6 +25,8 @@ public class FTPServer
         {
             System.out.println("Waiting for Connection ...");
             ftp t = new ftp(socfd.accept());
+            PrintWriter out = new PrintWriter(t.ClientSoc.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(t.ClientSoc.getInputStream()));
         }
     }
 }
@@ -213,6 +215,54 @@ class ftp extends Thread
         
     }
 
+    void NewFile() throws Exception
+    {
+        try
+        {
+            String fileName = din.readUTF();
+            String[] part = fileName.split(Matcher.quoteReplacement("\\"));
+            File f = new File(path + "/" + part[part.length -1]);
+
+            if (f.exists())
+            {
+                dout.writeUTF("File Already Exists");
+                return;
+            }
+            f.createNewFile();
+            dout.writeUTF("OK");
+        }
+        catch (IOException io)
+        {
+            dout.writeUTF("PM");
+        }
+    }
+
+
+    void NewFolder() throws Exception
+    {
+        try
+        {
+            String folderName = din.readUTF();
+            String[] part = folderName.split(Matcher.quoteReplacement("\\"));
+            File f = new File(path + "/" + part[part.length -1]);
+
+            if (f.exists())
+            {
+                dout.writeUTF("Folder Already Exists");
+                return;
+            }
+
+            if (f.mkdir() == true)
+                dout.writeUTF("OK");
+            else
+                dout.writeUTF("PM");
+        }
+        catch (IOException io)
+        {
+            
+        }
+    }
+
     void verify(){
         while(true)
         {
@@ -249,7 +299,7 @@ class ftp extends Thread
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             
         }
@@ -291,10 +341,18 @@ class ftp extends Thread
                 {
                     DeleteFile();
                 }
+                else if(Command.compareTo("NewFile") == 0)
+                {
+                    NewFile();
+                }
+                else if(Command.compareTo("NewFolder") == 0)
+                {
+                    NewFolder();
+                }
             }
             catch(Exception ex)
             {
-                System.out.println(ex.toString());
+                //System.out.println(ex.toString());
             }
         }
     }
@@ -316,7 +374,7 @@ class ftp extends Thread
         }
         catch(Exception ex)
         {
-            System.out.println("Error while encrypting: " + ex.toString());
+            //System.out.println("Error while encrypting: " + ex.toString());
         }
         return null;
     }
@@ -339,7 +397,7 @@ class ftp extends Thread
         }
         catch (Exception e)
         {
-          System.out.println("Error while decrypting: " + e.toString());
+          //System.out.println("Error while decrypting: " + e.toString());
         }
         return null;
     }
