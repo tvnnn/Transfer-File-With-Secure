@@ -733,6 +733,7 @@ public class Client extends javax.swing.JFrame {
                 System.out.println(din.readUTF());
             }
             JOptionPane.showConfirmDialog(null, "File Receive Successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
+            t.clientBrowser();
         }
         
         void DeleteFile() throws Exception
@@ -1196,10 +1197,13 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_BackActionPerformed
 
     private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
-        if (txt_Path.getText().compareTo("") == 0)
+        if(lst_Client.isSelectionEmpty() == true)
         {
-            JOptionPane.showMessageDialog(null, "Bruh, enter path of server first bro!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Choose file first!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        if (txt_Path.getText().compareTo("") == 0)
+            JOptionPane.showMessageDialog(null, "Bruh, enter path of server first bro!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
         else
         {
             try
@@ -1218,6 +1222,11 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_BrowserActionPerformed
 
     private void btn_ReceiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ReceiveActionPerformed
+        if(lst_Server.isSelectionEmpty() == true)
+        {
+            JOptionPane.showMessageDialog(null, "Choose file first!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if(lst_Client.getModel().getSize() == 0)
         {
             JOptionPane.showMessageDialog(null, "Bruh, enter path of client first bro!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
