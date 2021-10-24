@@ -30,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 
 /**
  *
@@ -841,7 +842,7 @@ public class Client extends javax.swing.JFrame {
                         btn_Delete.setEnabled(true);
                         btn_NewFile.setEnabled(true);
                         btn_MakeDirectory.setEnabled(true);
-                        //btn_Rename.setEnabled(false);
+                        btn_Rename.setEnabled(true);
                     }
                 }
             }
@@ -905,6 +906,7 @@ public class Client extends javax.swing.JFrame {
             btn_Receive.setEnabled(true);
             btn_NewFile.setEnabled(true);
             btn_MakeDirectory.setEnabled(true);
+            btn_Rename.setEnabled(true);
         }
 
         public void Login() throws Exception
@@ -936,6 +938,8 @@ public class Client extends javax.swing.JFrame {
                 btn_MakeDirectory.setEnabled(false);
                 btn_Rename.setEnabled(false);
                 jsepa.setBackground(Color.BLACK);
+                lst_Server.setSelectionMode(SINGLE_SELECTION);
+                lst_Client.setSelectionMode(SINGLE_SELECTION);
                 
                 lst_Server.addMouseListener(new MouseAdapter()
                 {
