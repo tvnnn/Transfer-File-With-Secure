@@ -101,8 +101,7 @@ class ftp extends Thread
     {
         String filename = din.readUTF();
         String[] part = filename.split(Matcher.quoteReplacement("\\"));
-
-        File f = new File(path + "/" + part[part.length -1]);
+        File f = new File(path + "/" + part[part.length - 1]);
         String option;
         if(f.exists())
         {
@@ -220,8 +219,7 @@ class ftp extends Thread
         try
         {
             String fileName = din.readUTF();
-            String[] part = fileName.split(Matcher.quoteReplacement("\\"));
-            File f = new File(path + "/" + part[part.length -1]);
+            File f = new File(path + "/" + fileName);
 
             if (f.exists())
             {
@@ -243,8 +241,7 @@ class ftp extends Thread
         try
         {
             String folderName = din.readUTF();
-            String[] part = folderName.split(Matcher.quoteReplacement("\\"));
-            File f = new File(path + "/" + part[part.length -1]);
+            File f = new File(path + "/" + folderName);
 
             if (f.exists())
             {
@@ -260,6 +257,37 @@ class ftp extends Thread
         catch (IOException io)
         {
             
+        }
+    }
+
+    void Rename() throws Exception
+    {
+        try
+        {
+            String oldName = din.readUTF();
+            File pre = new File(path + "/" + oldName);
+            String newName = din.readUTF();
+            File des = new File(path + "/" + newName);
+
+            if (pre.canRead() == false)
+            {
+                dout.writeUTF("PM");
+                return;
+            }
+            if (des.exists())
+            {
+                dout.writeUTF("File or Folder Already Exists");
+                return;
+            }
+            else
+            {
+                dout.writeUTF("OK");
+                pre.renameTo(des);
+            }
+        }
+        catch (Exception e)
+        {
+
         }
     }
 
@@ -348,6 +376,10 @@ class ftp extends Thread
                 else if(Command.compareTo("NewFolder") == 0)
                 {
                     NewFolder();
+                }
+                else if(Command.compareTo("Rename") == 0)
+                {
+                    Rename();
                 }
             }
             catch(Exception ex)

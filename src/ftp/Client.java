@@ -86,6 +86,11 @@ public class Client extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         txt_NewFolder = new javax.swing.JTextField();
         btn_NewFolderName = new javax.swing.JButton();
+        frmRename = new javax.swing.JFrame();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        txt_NewName = new javax.swing.JTextField();
+        btn_NewName = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -452,6 +457,58 @@ public class Client extends javax.swing.JFrame {
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        frmRename.setType(java.awt.Window.Type.POPUP);
+
+        jPanel7.setBackground(new java.awt.Color(255, 153, 153));
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel11.setText("Rename to: ");
+
+        btn_NewName.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_NewName.setText("OK");
+        btn_NewName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_NewNameActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_NewName)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(18, 18, 18)
+                        .addComponent(txt_NewName, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(45, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(txt_NewName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btn_NewName)
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout frmRenameLayout = new javax.swing.GroupLayout(frmRename.getContentPane());
+        frmRename.getContentPane().setLayout(frmRenameLayout);
+        frmRenameLayout.setHorizontalGroup(
+            frmRenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        frmRenameLayout.setVerticalGroup(
+            frmRenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(255, 102, 0));
@@ -623,7 +680,7 @@ public class Client extends javax.swing.JFrame {
         PrintWriter pw;
         DataOutputStream dout;
         BufferedReader br;
-        String dir, clientDir = "", newFileName = "", newFolderName = "";
+        String dir, clientDir = "", newFileName = "", newFolderName = "", newName = "", clientPath = "";
         private static final String SECRET_KEY = "sup3r_s3cr3t_k3y_by_b1s1c3t3aS3c";
         private static final String SALT = "sup3r_s4lt_h1h1_b1s1c3t3a";
         ftp(Socket soc)
@@ -734,7 +791,25 @@ public class Client extends javax.swing.JFrame {
                 System.out.println(din.readUTF());
             }
             JOptionPane.showConfirmDialog(null, "File Receive Successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
-            t.clientBrowser();
+            File dir = new File(clientPath);
+            File dsFile[] = dir.listFiles();
+            if (dsFile == null)
+            {
+                JOptionPane.showMessageDialog(null, "Folder empty!!!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                btn_Send.setEnabled(false);
+            }
+            else
+            {
+                clientDir = clientPath + "\\";
+                DefaultListModel dlm = new DefaultListModel();
+                for (int i = 0; i < dsFile.length; i++)
+                {
+                    if(dsFile[i].isFile())
+                        dlm.addElement(dsFile[i].getName());
+                }
+                lst_Client.setModel(dlm);
+                btn_Send.setEnabled(true);
+            }
         }
         
         void DeleteFile() throws Exception
@@ -794,6 +869,7 @@ public class Client extends javax.swing.JFrame {
                     btn_NewFile.setEnabled(false);
                     btn_MakeDirectory.setEnabled(false);
                     btn_Rename.setEnabled(false);
+                    t.BrowseDirectory();
                     return;
                 }
                 else
@@ -1043,8 +1119,8 @@ public class Client extends javax.swing.JFrame {
             if(fcPath.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             try
             {
-                String path = fcPath.getSelectedFile().getCanonicalPath();
-                File dir = new File(path);
+                clientPath = fcPath.getSelectedFile().getCanonicalPath();
+                File dir = new File(clientPath);
                 File dsFile[] = dir.listFiles();
                 if (dsFile == null)
                 {
@@ -1053,7 +1129,7 @@ public class Client extends javax.swing.JFrame {
                 }
                 else
                 {
-                    clientDir = path + "\\";
+                    clientDir = clientPath + "\\";
                     DefaultListModel dlm = new DefaultListModel();
                     for (int i = 0; i < dsFile.length; i++)
                     {
@@ -1104,7 +1180,6 @@ public class Client extends javax.swing.JFrame {
             if (msg.compareTo("File Already Exists") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "File already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
-                t.BrowseDirectory();
                 return;
             }
             if (msg.compareTo("PM") == 0)
@@ -1118,7 +1193,6 @@ public class Client extends javax.swing.JFrame {
         
         public void NewFolder() throws Exception
         {
-            //frmNewFolder.setDefaultCloseOperation(frmNewFolder.EXIT_ON_CLOSE);
             frmNewFolder.setPreferredSize(new Dimension(580, 175));
             frmNewFolder.pack();
             frmNewFolder.setTitle("Create Folder");
@@ -1137,7 +1211,6 @@ public class Client extends javax.swing.JFrame {
             if (msg.compareTo("Folder Already Exists") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "Folder already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
-                t.BrowseDirectory();
                 return;
             }
             if (msg.compareTo("PM") == 0)
@@ -1146,6 +1219,40 @@ public class Client extends javax.swing.JFrame {
                 return;
             }
             JOptionPane.showConfirmDialog(null, "Folder created successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
+            t.BrowseDirectory();
+        }
+        
+        public void NewName() throws Exception
+        {
+            frmRename.setPreferredSize(new Dimension(558, 175));
+            frmRename.pack();
+            frmRename.setTitle("Rename");
+            frmRename.setVisible(true);
+        }
+        
+        public void RenameTo() throws Exception
+        {
+            
+            newName = txt_NewName.getText();
+            frmRename.setVisible(false);
+            dout.writeUTF("Rename");
+            String newNameF = newName;
+            String oldName = lst_Server.getSelectedValue();
+            dout.writeUTF(oldName);
+            dout.writeUTF(newNameF);
+            txt_NewName.setText("");
+            String msg = din.readUTF();
+            if (msg.compareTo("PM") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "Permission Denied!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            if (msg.compareTo("File or Folder Already Exists") == 0)
+            {
+                JOptionPane.showConfirmDialog(null, "Folder already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
+                return;
+            }
+            JOptionPane.showConfirmDialog(null, "Rename successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
             t.BrowseDirectory();
         }
     }
@@ -1283,7 +1390,19 @@ public class Client extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_NewFileActionPerformed
 
     private void btn_RenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RenameActionPerformed
-        // TODO add your handling code here:
+        if(lst_Server.isSelectionEmpty() == true)
+        {
+            JOptionPane.showMessageDialog(null, "Choose file first!!!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try
+        {
+            t.NewName();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btn_RenameActionPerformed
 
     private void btn_MakeDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_MakeDirectoryActionPerformed
@@ -1299,7 +1418,10 @@ public class Client extends javax.swing.JFrame {
 
     private void btn_NewFileNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewFileNameActionPerformed
         if (txt_NewFile.getText().equals(""))
-            JOptionPane.showMessageDialog(null, "Let's input file name!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+        {
+           JOptionPane.showMessageDialog(null, "Let's input file name!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+           return;
+        }
         try
         {
             t.NewFileName();
@@ -1312,7 +1434,10 @@ public class Client extends javax.swing.JFrame {
 
     private void btn_NewFolderNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewFolderNameActionPerformed
         if (txt_NewFolder.getText().equals(""))
+        {
             JOptionPane.showMessageDialog(null, "Let's input folder name!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+            return;
+        }
         try
         {
             t.NewFolderName();
@@ -1322,6 +1447,22 @@ public class Client extends javax.swing.JFrame {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btn_NewFolderNameActionPerformed
+
+    private void btn_NewNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewNameActionPerformed
+        if (txt_NewName.getText().equals(""))
+        {
+            JOptionPane.showMessageDialog(null, "Let's input another name!!!", "ERROR", JOptionPane.DEFAULT_OPTION);
+            return;
+        }
+        try
+        {
+            t.RenameTo();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btn_NewNameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1377,6 +1518,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JButton btn_NewFile;
     private javax.swing.JButton btn_NewFileName;
     private javax.swing.JButton btn_NewFolderName;
+    private javax.swing.JButton btn_NewName;
     private javax.swing.JButton btn_Receive;
     private javax.swing.JButton btn_Rename;
     private javax.swing.JButton btn_Send;
@@ -1384,8 +1526,10 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JFrame frmMenu;
     private javax.swing.JFrame frmNewFile;
     private javax.swing.JFrame frmNewFolder;
+    private javax.swing.JFrame frmRename;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1400,6 +1544,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
@@ -1412,6 +1557,7 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JPanel separator;
     private javax.swing.JTextField txt_NewFile;
     private javax.swing.JTextField txt_NewFolder;
+    private javax.swing.JTextField txt_NewName;
     private javax.swing.JPasswordField txt_Password;
     private javax.swing.JTextField txt_Path;
     private javax.swing.JTextField txt_Username;
