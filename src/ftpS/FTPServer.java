@@ -3,6 +3,7 @@ package ftpS;
 import java.net.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.spec.KeySpec;
 import java.util.*;
 import javax.crypto.Cipher;
@@ -16,17 +17,157 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class FTPServer
 {
+    public static String hashAccount(String sString)
+    {
+        try
+        {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(sString.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
+            for (int i = 0; i < encodedhash.length; i++)
+            {
+                String hex = Integer.toHexString(0xff & encodedhash[i]);
+                if(hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Error while hashing: " + ex.toString());
+        }
+        return null;
+    }
+    
     public static void main(String args[]) throws Exception
     {
+        Scanner s = new Scanner(System.in);
         int PORT = 21113;
+        String content = null;
         ServerSocket socfd = new ServerSocket(PORT);
         System.out.println("FTP Server Started on Port Number " + String.valueOf(PORT));
         while(true)
         {
-            System.out.println("Waiting for Connection ...");
-            ftp t = new ftp(socfd.accept());
-            PrintWriter out = new PrintWriter(t.ClientSoc.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(t.ClientSoc.getInputStream()));
+            try
+            {
+                System.out.print("1. Create User\n2. Delete User\n3. Run FTPServer\n4. Exit\n => Your choose is: ");
+                int choose = s.nextInt();
+                switch(choose)
+                {
+                    case 1:
+                        try
+                        {
+                            File fl = new File("D:\\user.txt");
+                            FileInputStream fi = new FileInputStream(fl);
+                            DataInputStream di = new DataInputStream(fi);
+                            System.out.print("    -> Enter Username: ");
+                            s.nextLine();
+                            String usr = s.nextLine();
+                            System.out.print("    -> Enter Password: ");
+                            String pas = s.nextLine();
+
+                            if (usr.compareTo("") == 0 || pas.compareTo("") == 0)
+                            {
+                                System.out.print("Can't not be empty.\n");
+                                break;
+                            }
+                            String str = null;
+                            boolean dec = false;
+                            str = di.readLine();
+                            while(true)
+                            {
+                                if(str == null)
+                                    break;
+                                String str2 = di.readLine();
+                                if(str.equals(hashAccount(usr)))
+                                {
+                                    dec = true;
+                                    break;
+                                }
+                                str = di.readLine();
+                            }
+                            if(dec == true)
+                                System.out.println("User already exist!");
+                            else
+                            {
+                                System.out.println("Add user successfully !!");
+                                FileWriter fw = new FileWriter("D:\\user.txt", true);
+                                fw.write(hashAccount(usr) + "\n" + hashAccount(pas) + "\n");
+                                fw.close();
+                            }
+                            fi.close();
+                            di.close();
+                        }
+                        catch (Exception e)
+                        {
+                            System.out.println(e);
+                        }
+                        break;
+                    case 2:
+                        try
+                        {
+                            boolean flag = false;
+                            System.out.print("    -> Enter Username: ");
+                            s.nextLine();
+                            String usr = s.nextLine();
+
+                            File inputFile = new File("D:\\user.txt");
+                            File tempFile = new File("D:\\user.txt.tmp");
+                            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+                            String lineToRemove = hashAccount(usr);
+                            String currentLine;
+
+                            while((currentLine = reader.readLine()) != null) {
+                                String trimmedLine = currentLine.trim();
+                                if(trimmedLine.equals(lineToRemove))
+                                {
+                                    flag = true;
+                                    continue;
+                                }
+                                writer.write(currentLine + System.getProperty("line.separator"));
+                                writer.write(reader.readLine().trim() + System.getProperty("line.separator"));
+                            }
+                            if (flag == true)
+                                System.out.println("User Deleted!");
+                            else
+                                System.out.println("Can't find user!");
+                            writer.close(); 
+                            reader.close();
+
+                            inputFile.delete();
+                            File aRename = new File("D:\\user.txt");
+                            tempFile.renameTo(aRename);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.out.println(ex.toString());
+                        }
+                        break;
+                    case 3:
+                        while(true)
+                        {
+                            System.out.println("Waiting for Connection ...");
+                            ftp t = new ftp(socfd.accept());
+                            PrintWriter out = new PrintWriter(t.ClientSoc.getOutputStream(), true);
+                            BufferedReader in = new BufferedReader(new InputStreamReader(t.ClientSoc.getInputStream()));
+                        }
+                    case 4:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Bruh choose :)");
+                        break;
+                }   
+            }
+            catch (Exception ex)
+            {
+                System.out.println(ex.toString());
+                return;
+            }
         }
     }
 }
@@ -434,3 +575,4 @@ class ftp extends Thread
         return null;
     }
 }
+
