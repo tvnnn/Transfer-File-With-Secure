@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -702,27 +703,24 @@ public class Client extends javax.swing.JFrame {
         }
         void SendFile() throws Exception
         {
-            dout.writeUTF("SEND");
+            dout.writeUTF(encryptString("SEND"));
             
             String fileName = clientDir + lst_Client.getSelectedValue();
             File f = new File(fileName);
-            dout.writeUTF(fileName);
-
-            String msgFromServer = din.readUTF();
+            dout.writeUTF(encryptString(fileName));
+            String msgFromServer = decryptString(din.readUTF());
+            
             if (msgFromServer.compareTo("File Already Exists") == 0)
             {
                 int a = JOptionPane.showConfirmDialog(null, "File already exists. Want to overwrite it ?", "Notification", JOptionPane.OK_CANCEL_OPTION);
-                if(a == 0)    
-                {
-                    dout.writeUTF("Y");
-                }
+                if(a == 0)
+                    dout.writeUTF(encryptString("Y"));
                 else
                 {
-                    dout.writeUTF("N");
+                    dout.writeUTF(encryptString("N"));
                     return;
                 }
             }
-            System.out.println("Sending File ...");
             FileInputStream fin = new FileInputStream(f);
             int ch;
             do
@@ -739,12 +737,12 @@ public class Client extends javax.swing.JFrame {
 
         void ReceiveFile() throws Exception
         {
-            dout.writeUTF("RECEIVE");
+            dout.writeUTF(encryptString("RECEIVE"));
             String fileName = dir + lst_Server.getSelectedValue();
             
-            dout.writeUTF(fileName);
+            dout.writeUTF(encryptString(fileName));
             
-            String msgFromServer = din.readUTF();
+            String msgFromServer = decryptString(din.readUTF());
             if(msgFromServer.compareTo("PM") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "Permission Denied!", "ERROR", JOptionPane.DEFAULT_OPTION);
@@ -814,12 +812,12 @@ public class Client extends javax.swing.JFrame {
         
         void DeleteFile() throws Exception
         {
-            dout.writeUTF("DELETE");
+            dout.writeUTF(encryptString("DELETE"));
             String fileName = dir + lst_Server.getSelectedValue();
             
-            dout.writeUTF(fileName);
+            dout.writeUTF(encryptString(fileName));
             
-            String msgFromServer = din.readUTF();
+            String msgFromServer = decryptString(din.readUTF());
             if(msgFromServer.compareTo("PM") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "Permission Denied!", "ERROR", JOptionPane.DEFAULT_OPTION);
@@ -832,13 +830,13 @@ public class Client extends javax.swing.JFrame {
                     int a = JOptionPane.showConfirmDialog(null, "Are you sure to delete this file/folder?", "NOTIFICATION", JOptionPane.YES_NO_OPTION);
                     if (a == 0)
                     {
-                        dout.writeUTF("Y");
+                        dout.writeUTF(encryptString("Y"));
                         JOptionPane.showMessageDialog(null, "Delete Successfully!!!", "NOTIFICATION", JOptionPane.DEFAULT_OPTION);
                         t.BrowseDirectory();
                     }
                     else
                     {
-                        dout.writeUTF("N");
+                        dout.writeUTF(encryptString("N"));
                         return;
                     }
                     return;
@@ -853,10 +851,10 @@ public class Client extends javax.swing.JFrame {
                 String path = txt_Path.getText();
                 if(path.charAt(path.length() - 1) != '/')
                     txt_Path.setText(path + '/');
-                dout.writeUTF("LIST");
+                dout.writeUTF(encryptString("LIST"));
                 String fileName = txt_Path.getText();
-                dout.writeUTF(fileName);
-                String msgFromServer = din.readUTF();
+                dout.writeUTF(encryptString(fileName));
+                String msgFromServer = decryptString(din.readUTF());
                 System.out.print(msgFromServer);
                 DefaultListModel dlm = new DefaultListModel();
                 if (msgFromServer.compareTo("Dinvalid") == 0)
@@ -899,18 +897,17 @@ public class Client extends javax.swing.JFrame {
                             t.BrowseDirectory();
                             return;
                         }
-
                         else
                         {
                             dir = fileName;
 
                             int mountD = din.read();
                             for (int i = 0; i < mountD; i++)
-                                dlm.addElement(din.readUTF());
+                                dlm.addElement(decryptString(din.readUTF()));
 
                             int mountF = din.read();
                             for (int i = 0; i < mountF; i++)
-                                dlm.addElement(din.readUTF());
+                                dlm.addElement(decryptString(din.readUTF()));
                         }
                         lst_Server.setModel(dlm);
                         btn_Back.setEnabled(true);
@@ -930,7 +927,7 @@ public class Client extends javax.swing.JFrame {
 
         void BackDirectory() throws Exception
         {
-            dout.writeUTF("LIST");
+            dout.writeUTF(encryptString("LIST"));
             DefaultListModel dlm = new DefaultListModel();
             if(dir.equals("/"))
             {
@@ -957,10 +954,10 @@ public class Client extends javax.swing.JFrame {
                     str.getChars(0, k - 1, dst, 0);
                     dir = new String(dst, 0, k + 1);
                 }
-                dout.writeUTF(dir);
+                dout.writeUTF(encryptString(dir));
                 txt_Path.setText(dir);
             }
-            String msgFromServer = din.readUTF();
+            String msgFromServer = decryptString(din.readUTF());
             System.out.print(msgFromServer);
             if(msgFromServer.compareTo("Dinvalid") == 0)
             {
@@ -972,10 +969,10 @@ public class Client extends javax.swing.JFrame {
             {
                 int mountD = din.read();
                 for (int i = 0; i < mountD; i++)
-                    dlm.addElement(din.readUTF());
+                    dlm.addElement(encryptString(din.readUTF()));
                 int mountF = din.read();
                 for (int i = 0; i < mountF; i++)
-                    dlm.addElement(din.readUTF());
+                    dlm.addElement(encryptString(din.readUTF()));
             }
             lst_Server.setModel(dlm);
             btn_Back.setEnabled(true);
@@ -993,7 +990,7 @@ public class Client extends javax.swing.JFrame {
             dout.writeUTF(hashAccount(pass));
 
             
-            String reply = din.readUTF();
+            String reply = decryptString(din.readUTF());
             System.out.println(reply);
             if(reply.equalsIgnoreCase("login successful"))
             {
@@ -1027,9 +1024,12 @@ public class Client extends javax.swing.JFrame {
                             String fileName = lst_Server.getSelectedValue();
                             txt_Path.setText(path + fileName + "/");
                             dir = txt_Path.getText();
-                            try {
+                            try
+                            {
                                 t.BrowseDirectory();
-                            } catch (Exception ex) {
+                            }
+                            catch (Exception ex)
+                            {
                                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
@@ -1062,6 +1062,47 @@ public class Client extends javax.swing.JFrame {
             catch(Exception ex)
             {
                 System.out.println("Error while hashing: " + ex.toString());
+            }
+            return null;
+        }
+        
+        public String encryptString(String strToEncrypt)
+        {
+            try
+            {
+                String myKey = "bisiceteasec";
+                MessageDigest sha = MessageDigest.getInstance("SHA-1");
+                byte[] key = myKey.getBytes("UTF-8");
+                key = sha.digest(key);
+                key = Arrays.copyOf(key, 16);
+                SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+                Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            }
+            catch (Exception e) {
+                  System.out.println(e.toString());
+            }
+            return null;
+        }
+        
+        public String decryptString(String strToDecrypt)
+        {
+            try
+            {
+                String myKey = "bisiceteasec";
+                MessageDigest sha = MessageDigest.getInstance("SHA-1");
+                byte[] key = myKey.getBytes("UTF-8");
+                key = sha.digest(key);
+                key = Arrays.copyOf(key, 16);
+                SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+                Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            }
+            catch (Exception e)
+            {
+                System.out.println(e.toString());
             }
             return null;
         }
@@ -1158,7 +1199,7 @@ public class Client extends javax.swing.JFrame {
             btn_Back.setEnabled(false);
             txt_Path.setText("");
             frmMenu.setVisible(false);
-            dout.writeUTF("LOGOUT");
+            dout.writeUTF(encryptString("LOGOUT"));
         }
         
         public void NewFile() throws Exception
@@ -1172,11 +1213,11 @@ public class Client extends javax.swing.JFrame {
         {
             newFileName = txt_NewFile.getText();
             frmNewFile.setVisible(false);
-            dout.writeUTF("NewFile");
+            dout.writeUTF(encryptString("NewFile"));
             String fileName = newFileName;
-            dout.writeUTF(fileName);
+            dout.writeUTF(encryptString(fileName));
             txt_NewFile.setText("");
-            String msg = din.readUTF();
+            String msg = decryptString(din.readUTF());
             if (msg.compareTo("File Already Exists") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "File already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
@@ -1203,11 +1244,11 @@ public class Client extends javax.swing.JFrame {
         {
             newFolderName = txt_NewFolder.getText();
             frmNewFolder.setVisible(false);
-            dout.writeUTF("NewFolder");
+            dout.writeUTF(encryptString("NewFolder"));
             String folderName = newFolderName;
-            dout.writeUTF(folderName);
+            dout.writeUTF(encryptString(folderName));
             txt_NewFolder.setText("");
-            String msg = din.readUTF();
+            String msg = decryptString(din.readUTF());
             if (msg.compareTo("Folder Already Exists") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "Folder already exists.", "ERROR", JOptionPane.DEFAULT_OPTION);
@@ -1235,13 +1276,13 @@ public class Client extends javax.swing.JFrame {
             
             newName = txt_NewName.getText();
             frmRename.setVisible(false);
-            dout.writeUTF("Rename");
+            dout.writeUTF(encryptString("Rename"));
             String newNameF = newName;
             String oldName = lst_Server.getSelectedValue();
-            dout.writeUTF(oldName);
-            dout.writeUTF(newNameF);
+            dout.writeUTF(encryptString(oldName));
+            dout.writeUTF(encryptString(newNameF));
             txt_NewName.setText("");
-            String msg = din.readUTF();
+            String msg = decryptString(din.readUTF());
             if (msg.compareTo("PM") == 0)
             {
                 JOptionPane.showConfirmDialog(null, "Permission Denied!!!", "ERROR", JOptionPane.DEFAULT_OPTION);

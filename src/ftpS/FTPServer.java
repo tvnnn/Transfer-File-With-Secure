@@ -202,29 +202,29 @@ class ftp extends Thread
     }
     void SendFile() throws Exception
     {        
-        String filename = din.readUTF();
+        String filename = decryptString(din.readUTF());
 
         File f = new File(filename);
         if (f.canRead() == false)
         {
-            dout.writeUTF("PM");
+            dout.writeUTF(encryptString("PM"));
             return;
         }
 
         if (f.isDirectory() == true)
         {
-            dout.writeUTF("CantDownDir");
+            dout.writeUTF(encryptString("CantDownDir"));
             return;
         }
 
         if(!f.exists())
         {
-            dout.writeUTF("File Not Found");
+            dout.writeUTF(encryptString("File Not Found"));
             return;
         }
         else
         {
-            dout.writeUTF("READY");
+            dout.writeUTF(encryptString("READY"));
             FileInputStream fin = new FileInputStream(f);
             int ch;
             do
@@ -234,24 +234,24 @@ class ftp extends Thread
             }
             while(ch != -1);    
             fin.close();    
-            dout.writeUTF("File Receive Successfully");                            
+            dout.writeUTF(encryptString("File Receive Successfully"));
         }
     }
     
     void ReceiveFile() throws Exception
     {
-        String filename = din.readUTF();
+        String filename = decryptString(din.readUTF());
         String[] part = filename.split(Matcher.quoteReplacement("\\"));
         File f = new File(path + "/" + part[part.length - 1]);
         String option;
         if(f.exists())
         {
-            dout.writeUTF("File Already Exists");
-            option = din.readUTF();
+            dout.writeUTF(encryptString("File Already Exists"));
+            option = decryptString(din.readUTF());
         }
         else
         {
-            dout.writeUTF("SendFile");
+            dout.writeUTF(encryptString("SendFile"));
             option = "Y";
         }
             
@@ -269,30 +269,27 @@ class ftp extends Thread
             }
             while(ch != -1);
             fout.close();
-            dout.writeUTF("File Send Successfully");
+            dout.writeUTF(encryptString("File Send Successfully"));
         }
         else
-        {
             return;
-        }
-            
     }
 
     void DeleteFile() throws Exception
     {
-        String filename = din.readUTF();
+        String filename = decryptString(din.readUTF());
         File f = new File(filename);
         if (f.canRead() == false)
         {
-            dout.writeUTF("PM");
+            dout.writeUTF(encryptString("PM"));
             return;
         }
         else
         {
             if (f.exists())
             {
-                dout.writeUTF("SURE");
-                if(din.readUTF().compareTo("Y") == 0)
+                dout.writeUTF(encryptString("SURE"));
+                if(din.readUTF().compareTo(decryptString("Y")) == 0)
                     f.delete();
                 else
                     return;
@@ -312,25 +309,25 @@ class ftp extends Thread
 
         if(!folder.exists())
         {
-            allmsg = "Dinvalid";
+            allmsg = encryptString("Dinvalid");
             dout.writeUTF(allmsg);
             return;
         }
         if (folder.isFile())
         {
-            allmsg = "IsFile";
+            allmsg = encryptString("IsFile");
             dout.writeUTF(allmsg);
             return;
         }
         if (folder.canRead() == false)
         {
-            allmsg = "PM";
+            allmsg = encryptString("PM");
             dout.writeUTF(allmsg);
             return;
         }
         else
         {
-            allmsg = "OK";
+            allmsg = encryptString("OK");
             dout.writeUTF(allmsg);
             
             for (int i = 0; i < listOfFiles.length; i++)
@@ -345,11 +342,11 @@ class ftp extends Thread
             
             dout.write(directories.size());
             for (int i = 0; i < directories.size(); i++)
-                dout.writeUTF(directories.get(i));
+                dout.writeUTF(encryptString(directories.get(i)));
             
             dout.write(files.size());
             for (int i = 0; i < files.size(); i++)
-                dout.writeUTF(files.get(i));
+                dout.writeUTF(encryptString(files.get(i)));
             return;
         }
         
@@ -359,20 +356,20 @@ class ftp extends Thread
     {
         try
         {
-            String fileName = din.readUTF();
+            String fileName = decryptString(din.readUTF());
             File f = new File(path + "/" + fileName);
 
             if (f.exists())
             {
-                dout.writeUTF("File Already Exists");
+                dout.writeUTF(encryptString("File Already Exists"));
                 return;
             }
             f.createNewFile();
-            dout.writeUTF("OK");
+            dout.writeUTF(encryptString("OK"));
         }
         catch (IOException io)
         {
-            dout.writeUTF("PM");
+            dout.writeUTF(encryptString("PM"));
         }
     }
 
@@ -386,14 +383,14 @@ class ftp extends Thread
 
             if (f.exists())
             {
-                dout.writeUTF("Folder Already Exists");
+                dout.writeUTF(encryptString("Folder Already Exists"));
                 return;
             }
 
             if (f.mkdir() == true)
-                dout.writeUTF("OK");
+                dout.writeUTF(encryptString("OK"));
             else
-                dout.writeUTF("PM");
+                dout.writeUTF(encryptString("PM"));
         }
         catch (IOException io)
         {
@@ -405,24 +402,24 @@ class ftp extends Thread
     {
         try
         {
-            String oldName = din.readUTF();
+            String oldName = decryptString(din.readUTF());
             File pre = new File(path + "/" + oldName);
-            String newName = din.readUTF();
+            String newName = encryptString(din.readUTF());
             File des = new File(path + "/" + newName);
 
             if (pre.canRead() == false)
             {
-                dout.writeUTF("PM");
+                dout.writeUTF(encryptString("PM"));
                 return;
             }
             if (des.exists())
             {
-                dout.writeUTF("File or Folder Already Exists");
+                dout.writeUTF(encryptString("File or Folder Already Exists"));
                 return;
             }
             else
             {
-                dout.writeUTF("OK");
+                dout.writeUTF(encryptString("OK"));
                 pre.renameTo(des);
             }
         }
@@ -459,12 +456,12 @@ class ftp extends Thread
                 }
                 if(dec)
                 {
-                    dout.writeUTF("login successful");
+                    dout.writeUTF(encryptString("login successful"));
                     break;
                 }
                 else
-                    dout.writeUTF("login failed");
-                System.out.println("reached");
+                    dout.writeUTF(encryptString("login failed"));
+                System.out.println("Login fail");
             }
             catch (IOException e)
             {
@@ -482,7 +479,7 @@ class ftp extends Thread
         {
             try
             {
-                String Command = din.readUTF();
+                String Command = decryptString(din.readUTF());
                 if(Command.compareTo("RECEIVE") == 0)
                 {
                     SendFile();
@@ -571,6 +568,48 @@ class ftp extends Thread
         catch (Exception e)
         {
           //System.out.println("Error while decrypting: " + e.toString());
+        }
+        return null;
+    }
+    
+    public String encryptString(String strToEncrypt)
+    {
+        try
+        {
+            String myKey = "bisiceteasec";
+            MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            byte[] key = myKey.getBytes("UTF-8");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, 16);
+            SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.toString());
+        }
+        return null;
+    }
+
+    public String decryptString(String strToDecrypt)
+    {
+        try
+        {
+            String myKey = "bisiceteasec";
+            MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            byte[] key = myKey.getBytes("UTF-8");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, 16);
+            SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.toString());
         }
         return null;
     }
