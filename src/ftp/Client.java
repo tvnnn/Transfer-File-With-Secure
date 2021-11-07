@@ -730,7 +730,7 @@ public class Client extends javax.swing.JFrame {
             }
             while(ch != -1);
             fin.close();
-            System.out.println(din.readUTF());
+            System.out.println(decryptString(din.readUTF()));
             JOptionPane.showConfirmDialog(null, "File Send Successfully!!!", "Notification", JOptionPane.DEFAULT_OPTION);
             t.BrowseDirectory();
         }
@@ -852,8 +852,10 @@ public class Client extends javax.swing.JFrame {
                 if(path.charAt(path.length() - 1) != '/')
                     txt_Path.setText(path + '/');
                 dout.writeUTF(encryptString("LIST"));
+                
                 String fileName = txt_Path.getText();
                 dout.writeUTF(encryptString(fileName));
+                
                 String msgFromServer = decryptString(din.readUTF());
                 System.out.print(msgFromServer);
                 DefaultListModel dlm = new DefaultListModel();
@@ -969,10 +971,10 @@ public class Client extends javax.swing.JFrame {
             {
                 int mountD = din.read();
                 for (int i = 0; i < mountD; i++)
-                    dlm.addElement(encryptString(din.readUTF()));
+                    dlm.addElement(decryptString(din.readUTF()));
                 int mountF = din.read();
                 for (int i = 0; i < mountF; i++)
-                    dlm.addElement(encryptString(din.readUTF()));
+                    dlm.addElement(decryptString(din.readUTF()));
             }
             lst_Server.setModel(dlm);
             btn_Back.setEnabled(true);

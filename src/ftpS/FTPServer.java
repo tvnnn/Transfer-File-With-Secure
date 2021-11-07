@@ -59,7 +59,7 @@ public class FTPServer
                     case 1:
                         try
                         {
-                            File fl = new File("D:\\user.txt");
+                            File fl = new File("user.txt");
                             FileInputStream fi = new FileInputStream(fl);
                             DataInputStream di = new DataInputStream(fi);
                             System.out.print("    -> Enter Username: ");
@@ -93,7 +93,7 @@ public class FTPServer
                             else
                             {
                                 System.out.println("Add user successfully !!");
-                                FileWriter fw = new FileWriter("D:\\user.txt", true);
+                                FileWriter fw = new FileWriter("user.txt", true);
                                 fw.write(hashAccount(usr) + "\n" + hashAccount(pas) + "\n");
                                 fw.close();
                             }
@@ -113,8 +113,8 @@ public class FTPServer
                             s.nextLine();
                             String usr = s.nextLine();
 
-                            File inputFile = new File("D:\\user.txt");
-                            File tempFile = new File("D:\\user.txt.tmp");
+                            File inputFile = new File("user.txt");
+                            File tempFile = new File("user.txt.tmp");
                             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
                             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 
@@ -139,7 +139,7 @@ public class FTPServer
                             reader.close();
 
                             inputFile.delete();
-                            File aRename = new File("D:\\user.txt");
+                            File aRename = new File("user.txt");
                             tempFile.renameTo(aRename);
                         }
                         catch (Exception ex)
@@ -289,7 +289,7 @@ class ftp extends Thread
             if (f.exists())
             {
                 dout.writeUTF(encryptString("SURE"));
-                if(din.readUTF().compareTo(decryptString("Y")) == 0)
+                if(decryptString(din.readUTF()).compareTo("Y") == 0)
                     f.delete();
                 else
                     return;
@@ -300,7 +300,7 @@ class ftp extends Thread
 
     void BrowseDir() throws Exception
     {
-        path = din.readUTF();
+        path = decryptString(din.readUTF());
         File folder = new File(path);
         ArrayList<String> files = new ArrayList<String>();
         ArrayList<String> directories = new ArrayList<String>();
@@ -378,7 +378,7 @@ class ftp extends Thread
     {
         try
         {
-            String folderName = din.readUTF();
+            String folderName = decryptString(din.readUTF());
             File f = new File(path + "/" + folderName);
 
             if (f.exists())
@@ -404,7 +404,7 @@ class ftp extends Thread
         {
             String oldName = decryptString(din.readUTF());
             File pre = new File(path + "/" + oldName);
-            String newName = encryptString(din.readUTF());
+            String newName = decryptString(din.readUTF());
             File des = new File(path + "/" + newName);
 
             if (pre.canRead() == false)
