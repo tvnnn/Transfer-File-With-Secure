@@ -192,7 +192,7 @@ public class Client extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/Copyright.png"))); // NOI18N
-        jLabel2.setText("Cody by bisiceteaSec");
+        jLabel2.setText("Code by bisiceteaSec");
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ftp/ftp.png"))); // NOI18N
 
@@ -293,7 +293,7 @@ public class Client extends javax.swing.JFrame {
                         .addComponent(jsepa)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addComponent(jLabel2)
-                .addGap(36, 36, 36))
+                .addGap(23, 23, 23))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -678,9 +678,7 @@ public class Client extends javax.swing.JFrame {
         Socket ClientSoc;
         DataInputStream din;
         Scanner sc;
-        PrintWriter pw;
         DataOutputStream dout;
-        BufferedReader br;
         String dir, clientDir = "", newFileName = "", newFolderName = "", newName = "", clientPath = "";
         private static final String SECRET_KEY = "sup3r_s3cr3t_k3y_by_b1s1c3t3aS3c";
         private static final String SALT = "sup3r_s4lt_h1h1_b1s1c3t3a";
@@ -692,9 +690,7 @@ public class Client extends javax.swing.JFrame {
                 ClientSoc = soc;
                 din = new DataInputStream(ClientSoc.getInputStream());
                 sc = new Scanner(ClientSoc.getInputStream());
-                pw = new PrintWriter(ClientSoc.getOutputStream(), true);
                 dout = new DataOutputStream(ClientSoc.getOutputStream());
-                br = new BufferedReader(new InputStreamReader(System.in));
             }
             catch(Exception ex)
             {
@@ -901,7 +897,7 @@ public class Client extends javax.swing.JFrame {
                         }
                         else
                         {
-                            dir = fileName;
+                            dir = fileName; 
 
                             int mountD = din.read();
                             for (int i = 0; i < mountD; i++)
@@ -1301,7 +1297,7 @@ public class Client extends javax.swing.JFrame {
     }
     
     //Socket socfd = new Socket("103.28.32.42", 21113);
-    Socket socfd = new Socket("192.168.174.132", 21113);
+    Socket socfd = new Socket("103.28.32.42", 21113);
     ftp t = new ftp(socfd);
     
     private void txt_UsernameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_UsernameFocusGained

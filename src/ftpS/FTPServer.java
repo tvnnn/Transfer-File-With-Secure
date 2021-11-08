@@ -45,7 +45,6 @@ public class FTPServer
     {
         Scanner s = new Scanner(System.in);
         int PORT = 21113;
-        String content = null;
         ServerSocket socfd = new ServerSocket(PORT);
         System.out.println("FTP Server Started on Port Number " + String.valueOf(PORT));
         while(true)

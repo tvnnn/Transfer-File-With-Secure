@@ -108,7 +108,7 @@
                           </Group>
                       </Group>
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -360,7 +360,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/ftp/Copyright.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Cody by bisiceteaSec"/>
+                <Property name="text" type="java.lang.String" value="Code by bisiceteaSec"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel7">
