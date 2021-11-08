@@ -471,7 +471,6 @@ class ftp extends Thread
     }
     public void run()
     {
-        
         verify();
         
         while(true)
